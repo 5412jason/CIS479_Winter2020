@@ -48,6 +48,42 @@ class Map(object):
         self.map[int(indicies[0])][int(indicies[1])].qEast = -100.0
         self.map[int(indicies[0])][int(indicies[1])].qWest = -100.0
 
+    def print_q_values(self):
+            for row in self.map:
+                top = ""
+                middle = ""
+                bottom = ""
+                for item in row:
+                    if item.isWall:
+                        middle += "####"
+                    else:
+                        top += "    " + str(item.qNorth)
+                        middle += str(item.qWest) + "   " + str(item.qEast)
+                        bottom += "     " + str(item.qSouth)
+
+                print(top)
+                print(middle)
+                print(bottom)
+                print()
+
+    def print_n_values(self):
+        for row in self.map:
+            top = ""
+            middle = ""
+            bottom = ""
+            for item in row:
+                if item.isWall:
+                    middle += "####"
+                else:
+                    top += "    " + item.nNorth.str()
+                    middle += item.nWest.str() + "   " + item.nEast.str()
+                    bottom += "     " + item.nSouth.str()
+
+            print(top)
+            print(middle)
+            print(bottom)
+            print()
+
     def print_optimal_path(self):
         for x in range(0, self.x):
             line_str = ""

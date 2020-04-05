@@ -9,6 +9,10 @@ def main():
 
     for x in range(1, 5):
         learning.run_cycle()
+
+    newMap.print_q_values()
+    print("\n")
+    #newMap.print_n_values()
     return
 
 if __name__ == "__main__":

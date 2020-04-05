@@ -70,7 +70,7 @@ class QLearning(object):
         action = ""
 
         if action_prob <= 0.95:
-            q_max = 0.0
+            q_max = -1000000
             if node.qNorth >= q_max:
                 q_max = node.qNorth
                 action = "n"
