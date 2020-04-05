@@ -14,8 +14,8 @@ class QLearning(object):
         
         # find a random start location that is not a wall
         while good_node == False:
-            x_start = randrange(0, 7)
-            y_start = randrange(0, 6)
+            x_start = randrange(0, 6)
+            y_start = randrange(0, 7)
             self.current_location = [x_start, y_start]
             current_node = self.maze.map[self.current_location[0]][self.current_location[1]]
             if current_node.isWall == False:
@@ -25,15 +25,15 @@ class QLearning(object):
 
         while found_goal == False:
             current_node = self.maze.map[self.current_location[0]][self.current_location[1]]
-            if current_node.qNorth == 100.0:
+            if current_node.qNorth == 100.0 or current_node.qNorth == -100.0:
                 found_goal = True
             else:
                 action = self.determine_action(current_node)
-                next_location = self.drift_next_location(current_node, action, self.current_location[0], self.current_location[1])
+                next_location = self.find_next_location(current_node, action, self.current_location[0], self.current_location[1])
                 
                 next_node = Node(False, [0.0,0.0,0.0,0.0], [0,0,0,0])
 
-                if next_location[0] < 0 or next_location[1] < 0 or next_location[0] > 6 or next_location[1] > 5:
+                if next_location[0] < 0 or next_location[1] < 0 or next_location[0] > 5 or next_location[1] > 6:
                     next_node = Node(True, [0.0,0.0,0.0,0.0], [0,0,0,0])
                 else:
                     next_node = self.maze.map[next_location[0]][next_location[1]]
@@ -71,18 +71,18 @@ class QLearning(object):
 
         if action_prob <= 0.95:
             q_max = -1000000
-            if node.qNorth >= q_max:
-                q_max = node.qNorth
-                action = "n"
-            if node.qSouth >= q_max:
-                q_max = node.qSouth
-                action = "s"
-            if node.qEast >= q_max:
-                q_max = node.qEast
-                action = "e"
             if node.qWest >= q_max:
                 q_max = node.qWest
                 action = "w"
+            if node.qSouth >= q_max:
+                q_max = node.qSouth
+                action = "s"
+            if node.qNorth >= q_max:
+                q_max = node.qNorth
+                action = "n"
+            if node.qEast >= q_max:
+                q_max = node.qEast
+                action = "e"
         else:
             rand_action = randrange(1,4)
             if rand_action == 1:
@@ -147,21 +147,7 @@ class QLearning(object):
         
         return n
 
-    def actual_next_location(self, current, action, x, y):
-        next_location = [0,0]
-
-        if action == "n":
-            next_location = [x, y+1]
-        if action == "e":
-            next_location = [x+1, y]
-        if action == "s":
-            next_location = [x, y-1]
-        if action == "w":
-            next_location = [x-1, y]
-
-        return next_location
-
-    def drift_next_location(self, current, action, x, y):
+    def find_next_location(self, current, action, x, y):
         next_location = [0,0]
 
         drift_prob = random()
@@ -174,31 +160,30 @@ class QLearning(object):
 
         if drift == "none":
             if action == "n":
-                next_location = [x, y+1]
-            if action == "e":
-                next_location = [x+1, y]
-            if action == "s":
-                next_location = [x, y-1]
-            if action == "w":
                 next_location = [x-1, y]
-
+            if action == "e":
+                next_location = [x, y+1]
+            if action == "s":
+                next_location = [x+1, y]
+            if action == "w":
+                next_location = [x, y-1]
         elif drift == "right":
             if action == "n":
-                next_location = [x+1, y] # move east instead
+                next_location = [x, y+1] # move east instead
             if action == "e":
-                next_location = [x, y-1] # move south instead
+                next_location = [x+1, y] # move south instead
             if action == "s":
-                next_location = [x-1, y] # move west instead
+                next_location = [x, y-1] # move west instead
             if action == "w":
-                next_location = [x, y+1] # move north instead
+                next_location = [x-1, y] # move north instead
         elif drift == "left":
             if action == "n":
-                next_location = [x-1, y] # move west instead
+                next_location = [x, y-1] # move west instead
             if action == "e":
-                next_location = [x, y+1] # move north instead
+                next_location = [x-1, y] # move north instead
             if action == "s":
-                next_location = [x+1, y] # move east instead
+                next_location = [x, y+1] # move east instead
             if action == "w":
-                next_location = [x, y-1] # move south instead
+                next_location = [x+1, y] # move south instead
 
         return next_location

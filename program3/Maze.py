@@ -85,11 +85,16 @@ class Map(object):
             print()
 
     def print_optimal_path(self):
-        for x in range(0, self.x):
+        print("\n")
+        for x in range(0, self.y):
             line_str = ""
-            for y in range(0, self.y):
+            for y in range(0, self.x):
                 if self.map[x][y].isWall == False:
-                    q_max = 0.0
+                    q_max = -1000000
+                    action = ""
+                    if self.map[x][y].qWest > q_max:
+                        q_max = self.map[x][y].qWest
+                        action = "w"
                     if self.map[x][y].qNorth > q_max:
                         q_max = self.map[x][y].qNorth
                         action = "n"
@@ -99,9 +104,6 @@ class Map(object):
                     if self.map[x][y].qEast > q_max:
                         q_max = self.map[x][y].qEast
                         action = "e"
-                    if self.map[x][y].qWest > q_max:
-                        q_max = self.map[x][y].qWest
-                        action = "w"
 
                     if action == "n":
                         line_str += "^^^^    "
