@@ -1,7 +1,10 @@
 class Node(object):
     
-    def __init__(self, wall, qValues, nValues):
+    def __init__(self, terminal, wall, qValues, nValues):
 
+        # initialize all the values for the node
+
+        self.isTerminal = terminal
         self.isWall = wall
 
         self.qNorth = qValues[0]
@@ -20,7 +23,8 @@ class Map(object):
         self.y = size_y
         self._wall_file = wall_file
         self._goal_file = goal_file
-        self.map = [[Node(False, [0.0,0.0,0.0,0.0],[0,0,0,0]) for i in range(size_x)] for j in range(size_y)]
+        # initialize a 2d matrix for the map using python's list comprehension's
+        self.map = [[Node(False, False, [0.0,0.0,0.0,0.0],[0,0,0,0]) for i in range(size_x)] for j in range(size_y)]
 
         self.setup_map()
 
@@ -28,14 +32,17 @@ class Map(object):
 
         wall_file = open(self._wall_file, "r")
 
+        # read all the alls in and set the corresponding not to be a wall
         for line in wall_file:
             indicies = line.split(",")
             self.map[int(indicies[0])][int(indicies[1])].isWall = True
             
         goal_file = open(self._goal_file, "r")
 
+        # read the goal file and set the correct values
         line = goal_file.readline()
         indicies = line.split(",")
+        self.map[int(indicies[0])][int(indicies[1])].isTerminal = True;
         self.map[int(indicies[0])][int(indicies[1])].qNorth = 100.0
         self.map[int(indicies[0])][int(indicies[1])].qSouth = 100.0
         self.map[int(indicies[0])][int(indicies[1])].qEast = 100.0
@@ -43,6 +50,7 @@ class Map(object):
 
         line = goal_file.readline()
         indicies = line.split(",")
+        self.map[int(indicies[0])][int(indicies[1])].isTerminal = True;
         self.map[int(indicies[0])][int(indicies[1])].qNorth = -100.0
         self.map[int(indicies[0])][int(indicies[1])].qSouth = -100.0
         self.map[int(indicies[0])][int(indicies[1])].qEast = -100.0
@@ -55,11 +63,17 @@ class Map(object):
                 bottom = ""
                 for item in row:
                     if item.isWall:
-                        middle += "####"
+                        top += "              "
+                        middle += "     ####     "
+                        bottom += "              "
+                    elif item.isTerminal:
+                        top += "              "
+                        middle += "     100.     "
+                        bottom += "              "
                     else:
-                        top += "    " + str(item.qNorth)
-                        middle += str(item.qWest) + "   " + str(item.qEast)
-                        bottom += "     " + str(item.qSouth)
+                        top += "    " + "{:5.2f}".format(item.qNorth) + "     "
+                        middle += "{:5.2f}".format(item.qWest) + "  " + "{:5.2f}".format(item.qEast) + "  "
+                        bottom += "    " + "{:5.2f}".format(item.qSouth) + "     "
 
                 print(top)
                 print(middle)
@@ -73,11 +87,17 @@ class Map(object):
             bottom = ""
             for item in row:
                 if item.isWall:
-                    middle += "####"
+                    top += "              "
+                    middle += "     ####     "
+                    bottom += "              "
+                elif item.isTerminal:
+                    top += "              "
+                    middle += "              "
+                    bottom += "              "
                 else:
-                    top += "    " + item.nNorth.str()
-                    middle += item.nWest.str() + "   " + item.nEast.str()
-                    bottom += "     " + item.nSouth.str()
+                    top += "    " + "{:5.2f}".format(item.nNorth) + "     "
+                    middle += "{:5.2f}".format(item.nWest) + "  " + "{:5.2f}".format(item.nEast) + "  "
+                    bottom += "    " + "{:5.2f}".format(item.nSouth) + "     "
 
             print(top)
             print(middle)
@@ -89,7 +109,9 @@ class Map(object):
         for x in range(0, self.y):
             line_str = ""
             for y in range(0, self.x):
-                if self.map[x][y].isWall == False:
+                if self.map[x][y].isTerminal == True:
+                    line_str += "{:3.0f}".format(self.map[x][y].qNorth) + "     "
+                elif self.map[x][y].isWall == False:
                     q_max = -1000000
                     action = ""
                     if self.map[x][y].qWest > q_max:
